@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE ASTRAL DIADEM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #e2e8f0; }
+        .font-serif { font-family: 'Cinzel', serif; }
+        @keyframes sweep { 0% { transform: translateX(-100%) rotate(25deg); } 100% { transform: translateX(200%) rotate(25deg); } }
+        .animate-sweep { position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent); animation: sweep 4s infinite; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // --- ข้อมูลจำลอง (Mock Data) สำหรับเริ่มต้น ---
+        const INITIAL_PARTICIPANTS = [
+            { id: 1, rank: 1, name: "Aphrodite Hespera Celestine", house: "Zeraphina", year: "ชั้นปีที่ 6", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=500", bio: "ผู้นำตระกูล Celestine และศาสตราจารย์แห่ง Mystic Academy", seals: { outstanding: 5, special: 2 }, isEternalStar: true },
+            { id: 2, rank: 2, name: "Martree Devaakkara", house: "Flamma", year: "ชั้นปีที่ 4", image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=500", bio: "ผู้สื่อข่าวจาก Weazel News ที่มีความทะเยอทะยาน", seals: { trust: 3 }, isEternalStar: false }
+        ];
+
+        function App() {
+            const [participants, setParticipants] = useState(INITIAL_PARTICIPANTS);
+            const [selectedUser, setSelectedUser] = useState(null);
+
+            return (
+                <div className="min-h-screen relative overflow-hidden">
+                    {/* พื้นหลังดวงดาว */}
+                    <div className="fixed inset-0 pointer-events-none opacity-30">
+                        {[...Array(50)].map((_, i) => (
+                            <div key={i} className="absolute bg-white rounded-full animate-pulse" 
+                                 style={{ top: Math.random()*100+'%', left: Math.random()*100+'%', width: '2px', height: '2px', animationDelay: Math.random()*5+'s' }}></div>
+                        ))}
+                    </div>
+
+                    <nav className="p-8 flex justify-between items-center relative z-10">
+                        <h1 className="text-2xl font-serif font-bold tracking-[0.3em] text-yellow-500">THE ASTRAL DIADEM</h1>
+                    </nav>
+
+                    <main className="container mx-auto px-6 py-20 relative z-10 text-center">
+                        <h2 className="text-xs tracking-[1em] uppercase mb-4 text-white/40">Perfection is the Law</h2>
+                        <h3 className="text-6xl font-serif font-black mb-20 bg-gradient-to-b from-yellow-200 to-yellow-600 text-transparent bg-clip-text">THE CELESTIAL RANKING</h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                            {participants.map(p => (
+                                <div key={p.id} onClick={() => setSelectedUser(p)} className="group cursor-pointer relative bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden transition-all hover:scale-105 hover:border-yellow-500/50">
+                                    <div className="aspect-square overflow-hidden relative">
+                                        {p.rank === 1 && <div className="animate-sweep"></div>}
+                                        <img src={p.image} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div className="p-8">
+                                        <span className="text-yellow-500 font-bold text-sm tracking-widest uppercase">Rank #{p.rank}</span>
+                                        <h4 className="text-2xl font-serif font-bold mt-2">{p.name}</h4>
+                                        <p className="text-white/40 text-xs mt-2 uppercase tracking-widest">{p.house} • {p.year}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </main>
+
+                    {/* Profile Modal */}
+                    {selectedUser && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-md" onClick={() => setSelectedUser(null)}>
+                            <div className="max-w-4xl w-full bg-slate-900 border border-white/10 rounded-[3rem] overflow-hidden flex flex-col md:flex-row shadow-2xl" onClick={e => e.stopPropagation()}>
+                                <img src={selectedUser.image} className="w-full md:w-1/2 object-cover aspect-square" />
+                                <div className="p-12 flex-1">
+                                    <h2 className="text-4xl font-serif font-bold text-yellow-500 mb-4">{selectedUser.name}</h2>
+                                    <p className="text-white/40 uppercase tracking-widest text-xs mb-8">{selectedUser.house} • {selectedUser.year}</p>
+                                    <p className="text-lg italic text-white/70 border-l-2 border-yellow-500/30 pl-6">"{selectedUser.bio}"</p>
+                                    <button onClick={() => setSelectedUser(null)} className="mt-12 text-xs font-bold uppercase tracking-widest text-white/20 hover:text-white transition-colors">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
